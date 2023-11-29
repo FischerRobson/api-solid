@@ -2,6 +2,20 @@
 
 GymPass style app.
 
+## Run app
+
+1 - Run `docker.compose.yaml`
+
+```sh
+docker compose up -d
+```
+
+2 - Run migrations
+
+```sh
+npx prisma migrate dev
+```
+
 ## RFs
 
 - [] Deve ser possivel se cadastrar
