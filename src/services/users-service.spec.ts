@@ -18,7 +18,7 @@ describe(`${UsersService.name}`, () => {
       password: '12345678',
     })
 
-    expect(user.id).toBe(expect.any(String))
+    expect(user.id).toEqual(expect.any(String))
   })
 
   it('Should hash user password', async () => {
@@ -45,7 +45,7 @@ describe(`${UsersService.name}`, () => {
       password: '12345678',
     })
 
-    expect(async () => {
+    await expect(async () => {
       await service.registerUser({
         name: 'John Doe',
         email: 'johndoe@email.com',
