@@ -18,8 +18,8 @@ npx prisma migrate dev
 
 ## RFs
 
-- [] Deve ser possivel se cadastrar
-- [] Deve ser possivel se autenticar
+- [x] Deve ser possivel se cadastrar
+- [x] Deve ser possivel se autenticar
 - [] Deve ser possivel obter o perfil de um usuario logado
 - [] Deve ser possivel obter o numero de check-ins realizados pelo usuario logado
 - [] Deve ser possivel que o usuario obtenha seu historico de check-ins
@@ -31,7 +31,7 @@ npx prisma migrate dev
 
 ## RNs
 
-- [] Usuario nao deve poder se cadastrar com email duplicado
+- [x] Usuario nao deve poder se cadastrar com email duplicado
 - [] Usuario nao pode fazer 2 check-ins no mesmo dia
 - [] Usuario nao pode fazer check-in a mais de 100 metros da academia
 - [] Check-in so pode ser validado ate 20 minutos apos criado
@@ -40,7 +40,7 @@ npx prisma migrate dev
 
 ## RNFs
 
-- [] As senhas devem ser criptografadas
-- [] Dados devem ser persistidos num banco PostgreSQL
+- [x] As senhas devem ser criptografadas
+- [x] Dados devem ser persistidos num banco PostgreSQL
 - [] Todas as listas devem ser paginadas em listas de 20 items
 - [] O usuario deve ser identificado por um JWT

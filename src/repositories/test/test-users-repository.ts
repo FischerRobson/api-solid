@@ -24,4 +24,11 @@ export class TestUsersRepository implements UsersRepository {
     if (user) return user
     return null
   }
+
+  async findOneById(id: string) {
+    const user = this.items.find((e) => e.id === id)
+
+    if (user) return user
+    return null
+  }
 }

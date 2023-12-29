@@ -2,14 +2,23 @@ import { UsersRepository } from '@/repositories/users-repository'
 import { hash } from 'bcryptjs'
 import { UserAlreadyExistsException } from './errors/user-already-exists-exception'
 import { User } from '@prisma/client'
+import { ResourceNotFoundException } from './errors/resource-not-found-exception'
 
-interface RegisterUserParams {
+type RegisterUserParams = {
   name: string
   email: string
   password: string
 }
 
-interface RegisterUserResponse {
+type RegisterUserResponse = {
+  user: User
+}
+
+type GetUserParams = {
+  id: string
+}
+
+type GetUserResponse = {
   user: User
 }
 
@@ -38,6 +47,16 @@ export class UsersService {
       email,
       password_hash: passwordHash,
     })
+
+    return {
+      user,
+    }
+  }
+
+  async getUserProfile({ id }: GetUserParams): Promise<GetUserResponse> {
+    const user = await this.usersRepository.findOneById(id)
+
+    if (!user) throw new ResourceNotFoundException()
 
     return {
       user,
