@@ -21,7 +21,7 @@ export async function register(req: FastifyRequest, res: FastifyReply) {
     return res.status(HttpStatusCode.Created).send(user)
   } catch (err) {
     if (err instanceof UserAlreadyExistsException) {
-      return res.status(409).send({ error: err.message })
+      return res.status(HttpStatusCode.Conflict).send({ error: err.message })
     }
     throw err
   }
