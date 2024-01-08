@@ -15,6 +15,7 @@ export class TestGymsRepository implements GymsRepository {
       phone: data.phone || null,
       latitude: new Decimal(Number(data.latitude)),
       longitude: new Decimal(Number(data.longitude)),
+      created_at: new Date(),
     }
 
     this.items.push(gym)

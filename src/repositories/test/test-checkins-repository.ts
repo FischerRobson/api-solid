@@ -39,4 +39,13 @@ export class TestCheckInsRepository implements CheckInsRepository {
 
     return checkInOnSameDate
   }
+
+  async findManyByUserId(userId: string, page: number) {
+    const initialIndex = (page - 1) * 20
+    const finalIndex = page * 20
+
+    return this.items
+      .filter((checkIn) => checkIn.user_id === userId)
+      .slice(initialIndex, finalIndex)
+  }
 }

@@ -1,4 +1,4 @@
-import { describe, it, beforeEach, expect, beforeAll } from 'vitest'
+import { describe, it, beforeEach, expect } from 'vitest'
 import { AuthenticateService } from './authenticate-service'
 import { TestUsersRepository } from '@/repositories/test/test-users-repository'
 import { hash } from 'bcryptjs'

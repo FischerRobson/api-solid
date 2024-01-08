@@ -4,16 +4,26 @@ import { CheckIn } from '@prisma/client'
 import { ResourceNotFoundException } from './errors/resource-not-found-exception'
 import { getDistanceBeetweenCoordinates } from '@/utils/get-distance-between-coordinates'
 import { OutOfRangeGym } from './errors/out-of-range-gym'
+import { CheckInLimitException } from './errors/check-in-limit-exception'
 
-type CheckInParams = {
+type DoCheckInParams = {
   userId: string
   gymId: string
   userLatitude: number
   userLongitude: number
 }
 
-type CheckInResponse = {
+type DoCheckInResponse = {
   checkIn: CheckIn
+}
+
+type FetchCheckInHistoryParams = {
+  userId: string
+  page: number
+}
+
+type FetchCheckInHistoryResponse = {
+  checkIns: CheckIn[]
 }
 
 export class CheckInsService {
@@ -33,7 +43,7 @@ export class CheckInsService {
     userId,
     userLatitude,
     userLongitude,
-  }: CheckInParams): Promise<CheckInResponse> {
+  }: DoCheckInParams): Promise<DoCheckInResponse> {
     const gym = await this.gymsRepository.findById(gymId)
 
     if (!gym) {
@@ -63,7 +73,7 @@ export class CheckInsService {
     )
 
     if (checkInOnSameDate) {
-      throw new Error()
+      throw new CheckInLimitException()
     }
 
     const checkIn = await this.checkInsRepository.create({
@@ -73,6 +83,20 @@ export class CheckInsService {
 
     return {
       checkIn,
+    }
+  }
+
+  async fetchCheckInHistory({
+    userId,
+    page,
+  }: FetchCheckInHistoryParams): Promise<FetchCheckInHistoryResponse> {
+    const checkIns = await this.checkInsRepository.findManyByUserId(
+      userId,
+      page,
+    )
+
+    return {
+      checkIns,
     }
   }
 }

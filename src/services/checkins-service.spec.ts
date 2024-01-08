@@ -6,12 +6,15 @@ import { TestGymsRepository } from '@/repositories/test/test-gyms-repository'
 import { ResourceNotFoundException } from './errors/resource-not-found-exception'
 import { GymsRepository } from '@/repositories/gyms-repository'
 import { OutOfRangeGym } from './errors/out-of-range-gym'
+import { CheckInLimitException } from './errors/check-in-limit-exception'
+import { CheckInsRepository } from '@/repositories/checkins-repository'
 describe(`${CheckInsService.name}`, () => {
   let service: CheckInsService
   let gymsRepository: GymsRepository
+  let checkInRepository: CheckInsRepository
 
   beforeEach(async () => {
-    const checkInRepository = new TestCheckInsRepository()
+    checkInRepository = new TestCheckInsRepository()
     gymsRepository = new TestGymsRepository()
     service = new CheckInsService(checkInRepository, gymsRepository)
 
@@ -60,7 +63,7 @@ describe(`${CheckInsService.name}`, () => {
         userLatitude: 0,
         userLongitude: 0,
       })
-    }).rejects.toBeInstanceOf(Error)
+    }).rejects.toBeInstanceOf(CheckInLimitException)
   })
 
   it('should be able to checkin twice in different days', async () => {
@@ -114,5 +117,47 @@ describe(`${CheckInsService.name}`, () => {
         userLongitude: -47.3483157,
       })
     }).rejects.toBeInstanceOf(OutOfRangeGym)
+  })
+
+  it('should be able to fetch checkIn history for an user', async () => {
+    await service.doCheckIn({
+      gymId: 'gym-01',
+      userId: 'user-01',
+      userLatitude: 0,
+      userLongitude: 0,
+    })
+
+    const { checkIns } = await service.fetchCheckInHistory({
+      userId: 'user-01',
+      page: 1,
+    })
+
+    expect(checkIns).toHaveLength(1)
+    expect(checkIns).toEqual([expect.objectContaining({ gym_id: 'gym-01' })])
+  })
+
+  it('should be able to fetch checkIn paginated history for an user', async () => {
+    for (let i = 0; i < 27; i++) {
+      await checkInRepository.create({
+        gym_id: `gym-${i}`,
+        user_id: 'user-01',
+      })
+    }
+
+    const { checkIns } = await service.fetchCheckInHistory({
+      userId: 'user-01',
+      page: 2,
+    })
+
+    expect(checkIns).toHaveLength(7)
+    expect(checkIns).toEqual([
+      expect.objectContaining({ gym_id: 'gym-20' }),
+      expect.objectContaining({ gym_id: 'gym-21' }),
+      expect.objectContaining({ gym_id: 'gym-22' }),
+      expect.objectContaining({ gym_id: 'gym-23' }),
+      expect.objectContaining({ gym_id: 'gym-24' }),
+      expect.objectContaining({ gym_id: 'gym-25' }),
+      expect.objectContaining({ gym_id: 'gym-26' }),
+    ])
   })
 })
