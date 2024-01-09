@@ -1,7 +1,11 @@
 import { Gym, Prisma } from '@prisma/client'
-import { GymsRepository } from '../gyms-repository'
+import {
+  FindManyByLatitudeAndLongitudeParams,
+  GymsRepository,
+} from '../gyms-repository'
 import { randomUUID } from 'crypto'
 import { Decimal } from '@prisma/client/runtime/library'
+import { getDistanceBeetweenCoordinates } from '@/utils/get-distance-between-coordinates'
 
 export class TestGymsRepository implements GymsRepository {
   private items: Gym[] = []
@@ -28,5 +32,32 @@ export class TestGymsRepository implements GymsRepository {
 
     if (gym) return gym
     return null
+  }
+
+  async findManyByQuery(query: string, page: number) {
+    const initialIndex = (page - 1) * 20
+    const finalIndex = page * 20
+
+    return this.items
+      .filter((gym) => gym.title.includes(query))
+      .slice(initialIndex, finalIndex)
+  }
+
+  async findManyByLatitudeAndLongitude({
+    latitude,
+    longitude,
+  }: FindManyByLatitudeAndLongitudeParams) {
+    const MAX_DISTANCE_IN_KMS = 10
+
+    return this.items.filter((gym) => {
+      const distance = getDistanceBeetweenCoordinates(
+        { latitude, longitude },
+        {
+          latitude: gym.latitude.toNumber(),
+          longitude: gym.longitude.toNumber(),
+        },
+      )
+      return distance < MAX_DISTANCE_IN_KMS
+    })
   }
 }

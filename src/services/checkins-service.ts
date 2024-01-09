@@ -26,6 +26,23 @@ type FetchCheckInHistoryResponse = {
   checkIns: CheckIn[]
 }
 
+type GetUserMetricsParams = {
+  userId: string
+}
+
+type GetUserMetricsResponse = {
+  checkInsCount: number
+}
+
+type ValidateCheckInParams = {
+  userId: string
+  checkInId: string
+}
+
+type ValidateCheckInResponse = {
+  checkIn: CheckIn
+}
+
 export class CheckInsService {
   private checkInsRepository: CheckInsRepository
   private gymsRepository: GymsRepository
@@ -97,6 +114,35 @@ export class CheckInsService {
 
     return {
       checkIns,
+    }
+  }
+
+  async getUserMetrics({
+    userId,
+  }: GetUserMetricsParams): Promise<GetUserMetricsResponse> {
+    const checkInsCount = await this.checkInsRepository.countByUserId(userId)
+
+    return {
+      checkInsCount,
+    }
+  }
+
+  async validateCheckIn({
+    checkInId,
+    userId,
+  }: ValidateCheckInParams): Promise<ValidateCheckInResponse> {
+    const checkIn = await this.checkInsRepository.findById(checkInId)
+
+    if (!checkIn) {
+      throw new ResourceNotFoundException()
+    }
+
+    checkIn.validated_at = new Date()
+
+    const savedCheckIn = await this.checkInsRepository.update(checkIn)
+
+    return {
+      checkIn: savedCheckIn,
     }
   }
 }

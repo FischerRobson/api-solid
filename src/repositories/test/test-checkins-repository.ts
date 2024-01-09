@@ -48,4 +48,18 @@ export class TestCheckInsRepository implements CheckInsRepository {
       .filter((checkIn) => checkIn.user_id === userId)
       .slice(initialIndex, finalIndex)
   }
+
+  async countByUserId(userId: string) {
+    return this.items.filter((checkIn) => checkIn.user_id === userId).length
+  }
+
+  async findById(id: string) {
+    return this.items.find((checkIn) => checkIn.id === id) || null
+  }
+
+  async update(checkIn: CheckIn) {
+    const checkInIndex = this.items.findIndex((ch) => ch.id === checkIn.id)
+    if (checkInIndex >= 0) this.items[checkInIndex] = checkIn
+    return checkIn
+  }
 }

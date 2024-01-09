@@ -14,6 +14,24 @@ type RegisterGymResponse = {
   gym: Gym
 }
 
+type SearchGymsParams = {
+  query: string
+  page: number
+}
+
+type SearchGymsResponse = {
+  gyms: Gym[]
+}
+
+type FetchNearbyGymsParams = {
+  userLatitude: number
+  userLongitude: number
+}
+
+type FetchNearbyGymsResponse = {
+  gyms: Gym[]
+}
+
 export class GymsService {
   private gymsRepository: GymsRepository
 
@@ -39,5 +57,30 @@ export class GymsService {
     })
 
     return { gym }
+  }
+
+  async searchGyms({
+    query,
+    page,
+  }: SearchGymsParams): Promise<SearchGymsResponse> {
+    const gyms = await this.gymsRepository.findManyByQuery(query, page)
+
+    return {
+      gyms,
+    }
+  }
+
+  async fetchNearbyGyms({
+    userLatitude,
+    userLongitude,
+  }: FetchNearbyGymsParams): Promise<FetchNearbyGymsResponse> {
+    const gyms = await this.gymsRepository.findManyByLatitudeAndLongitude({
+      latitude: userLatitude,
+      longitude: userLongitude,
+    })
+
+    return {
+      gyms,
+    }
   }
 }

@@ -43,8 +43,6 @@ describe(`${CheckInsService.name}`, () => {
       userLongitude: 0,
     })
 
-    console.log(checkIn.created_at)
-
     expect(checkIn.id).toEqual(expect.any(String))
   })
 
@@ -159,5 +157,23 @@ describe(`${CheckInsService.name}`, () => {
       expect.objectContaining({ gym_id: 'gym-25' }),
       expect.objectContaining({ gym_id: 'gym-26' }),
     ])
+  })
+
+  it('should be able to get user checkIns count', async () => {
+    await checkInRepository.create({
+      gym_id: 'gym-01',
+      user_id: 'user-01',
+    })
+
+    await checkInRepository.create({
+      gym_id: 'gym-01',
+      user_id: 'user-01',
+    })
+
+    const { checkInsCount } = await service.getUserMetrics({
+      userId: 'user-01',
+    })
+
+    expect(checkInsCount).toEqual(2)
   })
 })
