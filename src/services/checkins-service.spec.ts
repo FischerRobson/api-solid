@@ -8,6 +8,8 @@ import { GymsRepository } from '@/repositories/gyms-repository'
 import { OutOfRangeGym } from './errors/out-of-range-gym'
 import { CheckInLimitException } from './errors/check-in-limit-exception'
 import { CheckInsRepository } from '@/repositories/checkins-repository'
+import { CheckInExpiratedException } from './errors/check-in-expirated-exception'
+
 describe(`${CheckInsService.name}`, () => {
   let service: CheckInsService
   let gymsRepository: GymsRepository
@@ -175,5 +177,41 @@ describe(`${CheckInsService.name}`, () => {
     })
 
     expect(checkInsCount).toEqual(2)
+  })
+
+  it('should be able to validate a checkIn', async () => {
+    const newCheckIn = await checkInRepository.create({
+      gym_id: 'gym-01',
+      user_id: 'user-01',
+    })
+
+    const { checkIn } = await service.validateCheckIn({
+      checkInId: newCheckIn.id,
+    })
+
+    expect(checkIn.validated_at).toEqual(expect.any(Date))
+  })
+
+  it('should not be able to validate an inexistent checkIn', async () => {
+    await expect(async () => {
+      await service.validateCheckIn({ checkInId: 'checkIn-01' })
+    }).rejects.toBeInstanceOf(ResourceNotFoundException)
+  })
+
+  it('should not be able to validate a checkIn after 20 minutes of its creation', async () => {
+    vi.setSystemTime(new Date(2024, 0, 10, 13, 0, 0))
+
+    const newCheckIn = await checkInRepository.create({
+      gym_id: 'gym-01',
+      user_id: 'user-01',
+    })
+
+    const TWENTY_ONE_MINUTES_MS = 1000 * 60 * 21
+
+    vi.advanceTimersByTime(TWENTY_ONE_MINUTES_MS)
+
+    await expect(async () => {
+      await service.validateCheckIn({ checkInId: newCheckIn.id })
+    }).rejects.toBeInstanceOf(CheckInExpiratedException)
   })
 })

@@ -5,6 +5,8 @@ import { ResourceNotFoundException } from './errors/resource-not-found-exception
 import { getDistanceBeetweenCoordinates } from '@/utils/get-distance-between-coordinates'
 import { OutOfRangeGym } from './errors/out-of-range-gym'
 import { CheckInLimitException } from './errors/check-in-limit-exception'
+import dayjs from 'dayjs'
+import { CheckInExpiratedException } from './errors/check-in-expirated-exception'
 
 type DoCheckInParams = {
   userId: string
@@ -35,7 +37,6 @@ type GetUserMetricsResponse = {
 }
 
 type ValidateCheckInParams = {
-  userId: string
   checkInId: string
 }
 
@@ -129,12 +130,24 @@ export class CheckInsService {
 
   async validateCheckIn({
     checkInId,
-    userId,
   }: ValidateCheckInParams): Promise<ValidateCheckInResponse> {
     const checkIn = await this.checkInsRepository.findById(checkInId)
 
     if (!checkIn) {
       throw new ResourceNotFoundException()
+    }
+
+    const distanceInMinutesFromCheckInDate = dayjs(new Date()).diff(
+      checkIn.created_at,
+      'minutes',
+    )
+
+    const MAX_DISTANCE_IN_MINUTES_FROM_CHECK_IN = 20
+
+    if (
+      distanceInMinutesFromCheckInDate > MAX_DISTANCE_IN_MINUTES_FROM_CHECK_IN
+    ) {
+      throw new CheckInExpiratedException()
     }
 
     checkIn.validated_at = new Date()
