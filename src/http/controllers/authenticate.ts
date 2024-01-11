@@ -14,7 +14,16 @@ export async function authenticate(req: FastifyRequest, res: FastifyReply) {
 
   try {
     const authenticateService = makeAuthenticateService()
-    await authenticateService.authenticate({ email, password })
+    const { user } = await authenticateService.authenticate({ email, password })
+
+    const token = res.jwtSign(
+      {},
+      {
+        sign: {
+          sub: user.id,
+        },
+      },
+    )
 
     return res.status(HttpStatusCode.OK).send()
   } catch (err) {
