@@ -4,7 +4,7 @@ import { HttpStatusCode } from '@/constants/HttpStatusCode'
 import { UserAlreadyExistsException } from '@/services/errors/user-already-exists-exception'
 import { makeUsersService } from '@/services/factories/make-users-service'
 
-export async function register(req: FastifyRequest, res: FastifyReply) {
+export async function userRegister(req: FastifyRequest, res: FastifyReply) {
   const bodySchema = z.object({
     name: z.string(),
     email: z.string().email(),

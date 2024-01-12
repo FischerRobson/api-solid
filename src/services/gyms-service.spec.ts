@@ -1,7 +1,6 @@
 import { describe, it, beforeEach, expect } from 'vitest'
 import { GymsService } from './gyms-service'
 import { TestGymsRepository } from '@/repositories/test/test-gyms-repository'
-import { object } from 'zod'
 
 describe(`${GymsService.name}`, () => {
   let service: GymsService
