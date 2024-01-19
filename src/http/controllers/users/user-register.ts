@@ -17,7 +17,7 @@ export async function userRegister(req: FastifyRequest, res: FastifyReply) {
     const userService = makeUsersService()
     const user = await userService.registerUser({ name, email, password })
 
-    return res.status(HttpStatusCode.Created).send(user)
+    return res.status(HttpStatusCode.Created).send({ user })
   } catch (err) {
     if (err instanceof UserAlreadyExistsException) {
       return res.status(HttpStatusCode.Conflict).send({ error: err.message })

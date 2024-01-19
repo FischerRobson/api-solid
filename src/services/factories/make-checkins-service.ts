@@ -2,7 +2,7 @@ import { PrismaCheckInsRepository } from '@/repositories/prisma/prisma-checkins-
 import { CheckInsService } from '../checkins-service'
 import { PrismaGymsRepository } from '@/repositories/prisma/prisma-gyms-repository'
 
-export function makeGymsService() {
+export function makeCheckInService() {
   return new CheckInsService(
     new PrismaCheckInsRepository(),
     new PrismaGymsRepository(),

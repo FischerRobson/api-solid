@@ -1,8 +1,11 @@
 import fastify from 'fastify'
-import { routes } from './http/routes'
-import { ZodError } from 'zod'
-import { env } from './env'
 import fastifyJwt from '@fastify/jwt'
+import { ZodError } from 'zod'
+import { usersRoutes } from './http/controllers/users/routes'
+
+import { env } from './env'
+import { gymsRoutes } from './http/controllers/gyms/routes'
+import { checkInsRoutes } from './http/controllers/checkIns/routes'
 
 export const app = fastify()
 
@@ -10,7 +13,9 @@ app.register(fastifyJwt, {
   secret: env.JWT_SECRET,
 })
 
-app.register(routes) // using routes as plugin
+app.register(usersRoutes) // using routes as plugin
+app.register(gymsRoutes)
+app.register(checkInsRoutes)
 
 app.setErrorHandler((err, req, res) => {
   if (env.NODE_ENV !== 'prod') console.error(err)
