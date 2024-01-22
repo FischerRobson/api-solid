@@ -17,7 +17,7 @@ export async function checkInValidate(req: FastifyRequest, res: FastifyReply) {
       checkInId,
     })
 
-    return res.status(HttpStatusCode.OK).send({ checkIn })
+    return res.status(HttpStatusCode.NoContent).send()
   } catch (err) {
     if (err instanceof ResourceNotFoundException) {
       return res.status(HttpStatusCode.NotFound).send({ error: err.message })

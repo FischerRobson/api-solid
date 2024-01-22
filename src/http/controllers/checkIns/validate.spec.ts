@@ -37,11 +37,6 @@ describe(`${checkInValidate.name}`, () => {
       .set('Authorization', `Bearer ${token}`)
       .send()
 
-    expect(response.status).toEqual(HttpStatusCode.OK)
-    expect(response.body.checkIn).toEqual(
-      expect.objectContaining({
-        id: checkIn.id,
-      }),
-    )
+    expect(response.status).toEqual(HttpStatusCode.NoContent)
   })
 })
