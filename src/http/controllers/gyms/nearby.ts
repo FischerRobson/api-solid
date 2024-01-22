@@ -4,12 +4,16 @@ import { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
 
 export async function gymsNearby(req: FastifyRequest, res: FastifyReply) {
-  const bodySchema = z.object({
-    userLatitude: z.coerce.number(),
-    userLongitude: z.coerce.number(),
+  const querySchema = z.object({
+    userLatitude: z.coerce.number().refine((value) => {
+      return Math.abs(value) <= 90
+    }),
+    userLongitude: z.coerce.number().refine((value) => {
+      return Math.abs(value) <= 180
+    }),
   })
 
-  const { userLatitude, userLongitude } = bodySchema.parse(req.params)
+  const { userLatitude, userLongitude } = querySchema.parse(req.query)
 
   const { gyms } = await makeGymsService().fetchNearbyGyms({
     userLatitude,

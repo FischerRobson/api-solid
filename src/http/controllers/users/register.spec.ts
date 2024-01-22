@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import request from 'supertest'
 import { app } from '@/app'
-import { userRegister } from './user-register'
+import { userRegister } from './register'
 import { HttpStatusCode } from '@/constants/HttpStatusCode'
 
 describe(`${userRegister}`, () => {
