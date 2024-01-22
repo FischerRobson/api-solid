@@ -33,7 +33,7 @@ describe(`${checkInValidate.name}`, () => {
     })
 
     const response = await request(app.server)
-      .put(`/check-ins/${checkIn.id}`)
+      .patch(`/check-ins/${checkIn.id}`)
       .set('Authorization', `Bearer ${token}`)
       .send()
 
