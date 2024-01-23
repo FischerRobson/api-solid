@@ -25,7 +25,25 @@ export async function authenticate(req: FastifyRequest, res: FastifyReply) {
       },
     )
 
-    return res.status(HttpStatusCode.OK).send({ token })
+    const refreshToken = await res.jwtSign(
+      {},
+      {
+        sign: {
+          sub: user.id,
+          expiresIn: '7d',
+        },
+      },
+    )
+
+    return res
+      .status(HttpStatusCode.OK)
+      .setCookie('refreshToken', refreshToken, {
+        path: '/',
+        secure: true,
+        sameSite: true,
+        httpOnly: true,
+      })
+      .send({ token })
   } catch (err) {
     if (err instanceof InvalidCredentialsException) {
       return res
