@@ -1,12 +1,13 @@
 import { HttpStatusCode } from '@/constants/HttpStatusCode'
 import { FastifyReply, FastifyRequest } from 'fastify'
-import { z } from 'zod'
 
 export async function refresh(req: FastifyRequest, res: FastifyReply) {
   await req.jwtVerify({ onlyCookie: true }) // look only cookie for refreshToken
 
   const token = await res.jwtSign(
-    {},
+    {
+      role: req.user.role,
+    },
     {
       sign: {
         sub: req.user.sub,
@@ -15,7 +16,7 @@ export async function refresh(req: FastifyRequest, res: FastifyReply) {
   )
 
   const refreshToken = await res.jwtSign(
-    {},
+    { role: req.user.role },
     {
       sign: {
         sub: req.user.sub,

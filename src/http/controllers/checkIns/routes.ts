@@ -4,6 +4,7 @@ import { checkInRegister } from './register'
 import { checkInHistory } from './history'
 import { checkInMetrics } from './metrics'
 import { checkInValidate } from './validate'
+import { onlyAdmin } from '@/http/middlewares/only-admin'
 
 export async function checkInsRoutes(app: FastifyInstance) {
   app.addHook('onRequest', verifyJwt) // every route will verify JWT now
@@ -13,5 +14,9 @@ export async function checkInsRoutes(app: FastifyInstance) {
   app.post('/gyms/:gymId/check-in', checkInRegister)
   app.get('/check-ins/history', checkInHistory)
   app.get('/check-ins/metrics', checkInMetrics)
-  app.patch('/check-ins/:checkInId', checkInValidate)
+  app.patch(
+    '/check-ins/:checkInId',
+    { onRequest: [onlyAdmin] },
+    checkInValidate,
+  )
 }
